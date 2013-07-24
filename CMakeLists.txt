@@ -20,11 +20,10 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf message_generation)
 #######################################
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+   FILES
+   Transform.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -34,10 +33,10 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf message_generation)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -49,9 +48,9 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf message_generation)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES discrete_controller
-#  CATKIN_DEPENDS message_generation roscpp std_msgs tf
+  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
 
@@ -63,8 +62,18 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
+
+set(discrete_SRC
+    src/discrete_node.cpp
+    src/Transform.cpp
+)
+
+add_executable(discrete_node ${discrete_SRC})
+target_link_libraries(discrete_node ${catkin_LIBRARIES})
+add_dependencies(discrete_node discrete_gencpp)
 
 ## Declare a cpp library
 # add_library(discrete_controller

@@ -2,7 +2,34 @@
 <configurationDescriptor version="89">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="discrete_controller">
+      <df name="include">
+        <in>Transform.h</in>
+      </df>
+      <df name="src">
+        <in>Transform.cpp</in>
+        <in>discrete_node.cpp</in>
+      </df>
     </df>
+    <logicalFolder name="src"
+                   displayName="src"
+                   projectFiles="true"
+                   root="../motion_control/src">
+      <logicalFolder name="over_tcp_motion"
+                     displayName="over_tcp_motion"
+                     projectFiles="true">
+        <itemPath>../motion_control/src/over_tcp_motion/ClientTcp.cpp</itemPath>
+        <itemPath>../motion_control/src/over_tcp_motion/RosControllerTcp.cpp</itemPath>
+        <itemPath>../motion_control/src/over_tcp_motion/ServerStream.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="serial_motion"
+                     displayName="serial_motion"
+                     projectFiles="true">
+        <itemPath>../motion_control/src/serial_motion/RosControllerSerial.cpp</itemPath>
+      </logicalFolder>
+      <itemPath>../motion_control/src/Serial.cpp</itemPath>
+      <itemPath>../motion_control/src/over_motion_node.cpp</itemPath>
+      <itemPath>../motion_control/src/serial_motion_node.cpp</itemPath>
+    </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false"
@@ -31,8 +58,90 @@
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>../../devel/include</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>ROS_BUILD_SHARED_LIBS=1</Elem>
+              <Elem>ROS_PACKAGE_NAME="discrete_controller"</Elem>
+            </preprocessorList>
+          </ccTool>
         </makeTool>
       </makefileType>
+      <item path="../motion_control/src/Serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/over_motion_node.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/over_tcp_motion/ClientTcp.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/over_tcp_motion/RosControllerTcp.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/over_tcp_motion/ServerStream.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/serial_motion/RosControllerSerial.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="../motion_control/src/serial_motion_node.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <folder path="discrete_controller">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="src">
+        <ccTool>
+          <incDir>
+            <pElem>../motion_control/include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ROS_PACKAGE_NAME="motion_control"</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <item path="include/Transform.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/Transform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/discrete_node.cpp" ex="false" tool="1" flavor2="0">
+      </item>
     </conf>
   </confs>
 </configurationDescriptor>
