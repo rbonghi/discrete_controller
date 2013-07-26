@@ -49,9 +49,9 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES discrete_controller
+  LIBRARIES discrete_controller motion_control
   CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+  DEPENDS system_lib
 )
 
 ###########
@@ -67,6 +67,7 @@ include_directories(
 )
 
 set(discrete_SRC
+    src/MultiRate.cpp
     src/discrete_node.cpp
     src/Transform.cpp
 )

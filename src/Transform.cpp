@@ -12,9 +12,7 @@
 
 Transform::Transform(motion_control::Pose pose)
 {
-  state.z1 = pose.x;
-  state.z2 = tan(pose.theta);
-  state.z3 = pose.y;
+  state = TransformPose(pose);
 }
 
 Transform::Transform(const Transform& orig)
@@ -27,10 +25,19 @@ Transform::~Transform()
 
 motion_control::Pose Transform::antiTrasform()
 {
-  return antiTrasform(this->state);
+  return antiTransformPose(this->state);
 }
 
-motion_control::Pose Transform::antiTrasform(discrete_controller::Transform state)
+discrete_controller::Transform Transform::TransformPose(motion_control::Pose pose)
+{
+  discrete_controller::Transform state;
+  state.z1 = pose.x;
+  state.z2 = tan(pose.theta);
+  state.z3 = pose.y;
+  return state;
+}
+
+motion_control::Pose Transform::antiTransformPose(discrete_controller::Transform state)
 {
   motion_control::Pose pose;
   pose.x = state.z1;

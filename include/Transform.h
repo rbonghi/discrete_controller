@@ -18,7 +18,8 @@ public:
     Transform(const Transform& orig);
     virtual ~Transform();
     motion_control::Pose antiTrasform();
-    motion_control::Pose static antiTrasform(discrete_controller::Transform state);
+    discrete_controller::Transform static TransformPose(motion_control::Pose pose);
+    motion_control::Pose static antiTransformPose(discrete_controller::Transform state);
 private:
     discrete_controller::Transform state;
 };
