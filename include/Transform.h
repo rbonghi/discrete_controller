@@ -11,6 +11,7 @@
 #include <motion_control/Pose.h>
 #include <motion_control/Velocity.h>
 #include <discrete_controller/Transform.h>
+#include <discrete_controller/Command.h>
 
 class Transform {
 public:
@@ -20,6 +21,7 @@ public:
     motion_control::Pose antiTrasform();
     discrete_controller::Transform static TransformPose(motion_control::Pose pose);
     motion_control::Pose static antiTransformPose(discrete_controller::Transform state);
+    motion_control::Velocity static control(discrete_controller::Command cmd, const motion_control::Pose *pose);
 private:
     discrete_controller::Transform state;
 };

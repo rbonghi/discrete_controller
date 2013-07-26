@@ -6,6 +6,9 @@
         <in>MultiRate.h</in>
         <in>Transform.h</in>
       </df>
+      <df name="msg">
+        <in>Command.msg</in>
+      </df>
       <df name="src">
         <in>MultiRate.cpp</in>
         <in>Transform.cpp</in>
@@ -141,6 +144,8 @@
       <item path="include/MultiRate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Transform.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="msg/Command.msg" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="0">
       </item>

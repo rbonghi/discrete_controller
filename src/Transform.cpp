@@ -9,6 +9,7 @@
 #include <math.h>
 #include <motion_control/Pose.h>
 #include <discrete_controller/Transform.h>
+#include <discrete_controller/Command.h>
 
 Transform::Transform(motion_control::Pose pose)
 {
@@ -44,4 +45,13 @@ motion_control::Pose Transform::antiTransformPose(discrete_controller::Transform
   pose.y = state.z3;
   pose.theta = atan(state.z2);
   return pose;
+}
+
+motion_control::Velocity Transform::control(discrete_controller::Command cmd, const motion_control::Pose *pose)
+{
+  float costh = cos(pose->theta);
+  motion_control::Velocity velocity;
+  velocity.lin_vel = cmd.u1/costh;
+  velocity.ang_vel = cmd.u2/(pow(costh,2));
+  return velocity;
 }
