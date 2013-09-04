@@ -20,21 +20,23 @@ public:
     MultiRate(const MultiRate& orig);
     virtual ~MultiRate();
     
+    void setActionStop(ActionType action);
     void setActionRate(ActionType action);
     void setActionMultiRate(ActionType action);
 private:
+    bool stop_;
     ros::Timer timer_;
     unsigned int time_, multirate_, counter_;
     ros::NodeHandle nh_;
     ActionType *pActions;
-    ActionType actionRate_;
+    ActionType actionRate_, actionStop_;
     unsigned int counter_actions_;
     
     void timerCallback(const ros::TimerEvent& event);
     
     void multiRateStep(int step);
     void rateStep();
+    void stop();
 };
 
 #endif	/* MULTIRATE_H */
-

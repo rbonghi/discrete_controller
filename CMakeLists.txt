@@ -70,7 +70,9 @@ include_directories(
 set(discrete_SRC
     src/MultiRate.cpp
     src/discrete_node.cpp
-    src/Transform.cpp
+    src/transformation/Transform.cpp
+    src/transformation/TransformFirst.cpp
+    src/Unicycle.cpp
 )
 
 add_executable(discrete_node ${discrete_SRC})

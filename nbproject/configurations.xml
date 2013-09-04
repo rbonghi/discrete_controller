@@ -4,14 +4,15 @@
     <df root="." name="discrete_controller">
       <df name="include">
         <in>MultiRate.h</in>
-        <in>Transform.h</in>
-      </df>
-      <df name="msg">
-        <in>Command.msg</in>
+        <in>Unicycle.h</in>
       </df>
       <df name="src">
+        <df name="transformation">
+          <in>Transform.cpp</in>
+          <in>TransformFirst.cpp</in>
+        </df>
         <in>MultiRate.cpp</in>
-        <in>Transform.cpp</in>
+        <in>Unicycle.cpp</in>
         <in>discrete_node.cpp</in>
       </df>
     </df>
@@ -143,15 +144,26 @@
       </folder>
       <item path="include/MultiRate.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/Transform.h" ex="false" tool="3" flavor2="0">
+      <item path="include/Unicycle.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="msg/Command.msg" ex="false" tool="3" flavor2="0">
+      <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/Unicycle.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="src/Transform.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/discrete_node.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="src/discrete_node.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/transformation/Transform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/transformation/TransformFirst.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
       </item>
     </conf>
   </confs>

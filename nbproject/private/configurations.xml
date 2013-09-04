@@ -3,15 +3,23 @@
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="discrete_controller">
       <df name="include">
+        <df name="transformation">
+          <in>AbstractTransform.h</in>
+          <in>Transform.h</in>
+          <in>TransformFirst.h</in>
+        </df>
         <in>MultiRate.h</in>
-        <in>Transform.h</in>
+        <in>Unicycle.h</in>
       </df>
       <df name="msg">
-        <in>Command.msg</in>
       </df>
       <df name="src">
+        <df name="transformation">
+          <in>Transform.cpp</in>
+          <in>TransformFirst.cpp</in>
+        </df>
         <in>MultiRate.cpp</in>
-        <in>Transform.cpp</in>
+        <in>Unicycle.cpp</in>
         <in>discrete_node.cpp</in>
       </df>
     </df>
