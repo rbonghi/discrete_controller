@@ -31,11 +31,20 @@ Unicycle::~Unicycle()
 {
 }
 
-void Unicycle::update()
+void Unicycle::update(double rate_update)
 {
-  pose.theta += velocity.ang_vel;
-  pose.x += cos(pose.theta) * velocity.lin_vel;
-  pose.y += sin(pose.theta) * velocity.lin_vel;
+  double th_old = pose.theta;
+  pose.theta += velocity.ang_vel*rate_update;
+  if (velocity.ang_vel != 0)
+  {
+    pose.x += (velocity.lin_vel) / (velocity.ang_vel) * (sin(pose.theta) - sin(th_old));
+    pose.y -= (velocity.lin_vel) / (velocity.ang_vel) * (cos(pose.theta) - cos(th_old));
+  }
+  else
+  {
+    pose.x += velocity.lin_vel*rate_update*cos(th_old);
+    pose.y += velocity.lin_vel*rate_update*sin(th_old);
+  }
 }
 
 void Unicycle::setVelocity(motion_control::Velocity vel)

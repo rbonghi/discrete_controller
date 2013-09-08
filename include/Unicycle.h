@@ -17,7 +17,7 @@ public:
     Unicycle(motion_control::Pose pose);
     Unicycle(const Unicycle& orig);
     virtual ~Unicycle();
-    void update();
+    void update(double rate_update);
     void setVelocity(motion_control::Velocity vel);
     motion_control::Pose getPose();
 private:
