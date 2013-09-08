@@ -68,8 +68,10 @@ include_directories(
 )
 
 set(discrete_SRC
-    src/MultiRate.cpp
-    src/discrete_node.cpp
+    #src/MultiRate.cpp
+    #src/discrete_node.cpp
+    src/PathPlotter.cpp
+    src/discrete_controller.cpp
     src/transformation/Transform.cpp
     src/transformation/TransformFirst.cpp
     src/Unicycle.cpp

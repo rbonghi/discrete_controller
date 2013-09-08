@@ -7,52 +7,54 @@
 
 #include "Unicycle.h"
 
-Unicycle::Unicycle()
-{
-  pose.x = 0;
-  pose.y = 0;
-  pose.theta = 0;
-  velocity.lin_vel = 0;
-  velocity.ang_vel = 0;
+Unicycle::Unicycle() {
+    current_time_ = ros::Time::now();
+    pose.pose.position.x = 0.0;
+    pose.pose.position.y = 0.0;
+    pose.pose.position.z = 0.0;
+    //since all odometry is 6DOF we'll need a quaternion created from yaw
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(0.0);
+    pose.pose.orientation = odom_quat;
+    velocity.lin_vel = 0;
+    velocity.ang_vel = 0;
 }
 
-Unicycle::Unicycle(motion_control::Pose pose)
-{
-  this->pose = pose;
-  velocity.lin_vel = 0;
-  velocity.ang_vel = 0;
+Unicycle::Unicycle(geometry_msgs::PoseStamped pose) {
+    current_time_ = ros::Time::now();
+    this->pose = pose;
+    velocity.lin_vel = 0;
+    velocity.ang_vel = 0;
 }
 
-Unicycle::Unicycle(const Unicycle& orig)
-{
+Unicycle::Unicycle(const Unicycle& orig) {
 }
 
-Unicycle::~Unicycle()
-{
+Unicycle::~Unicycle() {
 }
 
-void Unicycle::update(double rate_update)
-{
-  double th_old = pose.theta;
-  pose.theta += velocity.ang_vel*rate_update;
-  if (velocity.ang_vel != 0)
-  {
-    pose.x += (velocity.lin_vel) / (velocity.ang_vel) * (sin(pose.theta) - sin(th_old));
-    pose.y -= (velocity.lin_vel) / (velocity.ang_vel) * (cos(pose.theta) - cos(th_old));
-  }
-  else
-  {
-    pose.x += velocity.lin_vel*rate_update*cos(th_old);
-    pose.y += velocity.lin_vel*rate_update*sin(th_old);
-  }
+void Unicycle::update(double rate_update) {
+    double th_old = tf::getYaw(pose.pose.orientation);
+    double th_new = th_old + velocity.ang_vel*rate_update;
+    pose.header.stamp = current_time_ + ros::Duration(rate_update);
+    pose.pose.position.z = 0.0;
+    if (velocity.ang_vel != 0) {
+        pose.pose.position.x += (velocity.lin_vel) / (velocity.ang_vel) * (sin(th_new) - sin(th_old));
+        pose.pose.position.y -= (velocity.lin_vel) / (velocity.ang_vel) * (cos(th_new) - cos(th_old));
+    } else {
+        pose.pose.position.x += velocity.lin_vel * rate_update * cos(th_old);
+        pose.pose.position.y += velocity.lin_vel * rate_update * sin(th_old);
+    }
 }
 
-void Unicycle::setVelocity(motion_control::Velocity vel)
-{
-  velocity = vel;
+void Unicycle::setVelocity(motion_control::Velocity vel) {
+    velocity = vel;
 }
 
-motion_control::Pose Unicycle::getPose()
-{
-  return pose;
+void Unicycle::setPose(geometry_msgs::PoseStamped pose) {
+    current_time_ = ros::Time::now();
+    this->pose = pose;
+}
+
+geometry_msgs::PoseStamped Unicycle::getPose() {
+    return pose;
 }

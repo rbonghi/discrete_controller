@@ -21,6 +21,10 @@ TransformFirst::TransformFirst(const motion_control::Pose *pose) {
     state = transformPose(pose);
 }
 
+TransformFirst::TransformFirst(const geometry_msgs::PoseStamped *pose) {
+    state = transformPoseStamped(pose);
+}
+
 TransformFirst::TransformFirst(const TransformFirst& orig) {
 }
 
@@ -33,6 +37,22 @@ discrete_controller::Transform TransformFirst::transformPose(const motion_contro
     state.z2 = tan(pose->theta);
     state.z3 = pose->y;
     return state;
+}
+
+discrete_controller::Transform TransformFirst::transformPoseStamped(const geometry_msgs::PoseStamped *pose) {
+    discrete_controller::Transform state;
+    state.z1 = pose->pose.position.x;
+    state.z2 = tf::getYaw(pose->pose.orientation);
+    state.z3 = pose->pose.position.y;
+    return state;
+};
+
+void TransformFirst::setPose(const motion_control::Pose *pose) {
+    state = transformPose(pose);
+}
+
+void TransformFirst::setPoseStamped(const geometry_msgs::PoseStamped *pose) {
+    state = transformPoseStamped(pose);
 }
 
 motion_control::Pose TransformFirst::antiTransform() {
@@ -61,8 +81,8 @@ TransformFirst TransformFirst::operator-(const TransformFirst& p) {
 
 TransformFirst TransformFirst::operator/(const double& p) {
     TransformFirst div;
-    div.state.z1 = this->state.z1/p;
-    div.state.z2 = this->state.z2/p;
-    div.state.z3 = this->state.z3/p;
+    div.state.z1 = this->state.z1 / p;
+    div.state.z2 = this->state.z2 / p;
+    div.state.z3 = this->state.z3 / p;
     return div;
 }

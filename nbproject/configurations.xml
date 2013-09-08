@@ -4,6 +4,7 @@
     <df root="." name="discrete_controller">
       <df name="include">
         <in>MultiRate.h</in>
+        <in>PathPlotter.h</in>
         <in>Unicycle.h</in>
       </df>
       <df name="src">
@@ -12,7 +13,9 @@
           <in>TransformFirst.cpp</in>
         </df>
         <in>MultiRate.cpp</in>
+        <in>PathPlotter.cpp</in>
         <in>Unicycle.cpp</in>
+        <in>discrete_controller.cpp</in>
         <in>discrete_node.cpp</in>
       </df>
     </df>
@@ -144,15 +147,21 @@
       </folder>
       <item path="include/MultiRate.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PathPlotter.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Unicycle.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
         </ccTool>
       </item>
+      <item path="src/PathPlotter.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/Unicycle.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
         </ccTool>
+      </item>
+      <item path="src/discrete_controller.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/discrete_node.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
