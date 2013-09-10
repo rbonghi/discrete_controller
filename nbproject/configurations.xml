@@ -3,9 +3,16 @@
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="discrete_controller">
       <df name="include">
+        <df name="transformation">
+          <in>AbstractTransform.h</in>
+          <in>Transform.h</in>
+          <in>TransformFirst.h</in>
+        </df>
         <in>MultiRate.h</in>
-        <in>PathPlotter.h</in>
         <in>Unicycle.h</in>
+      </df>
+      <df name="launch">
+        <in>remote.launch</in>
       </df>
       <df name="src">
         <df name="transformation">
@@ -147,9 +154,21 @@
       </folder>
       <item path="include/MultiRate.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="include/PathPlotter.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/Unicycle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/transformation/AbstractTransform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="include/transformation/Transform.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/transformation/TransformFirst.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="launch/remote.launch" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>

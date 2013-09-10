@@ -1,0 +1,4 @@
+<launch>
+  <param name="robot_description" command="cat $(find motion_control)/model.urdf" />
+  <!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find motion_control)/explorer.rviz"/>-->
+</launch>

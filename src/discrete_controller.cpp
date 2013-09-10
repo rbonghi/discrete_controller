@@ -25,67 +25,96 @@ using namespace std;
 PathPlotter* path;
 Transform alpha;
 discrete_controller::Command cmd;
+geometry_msgs::PoseStamped pose_robot;
 
-void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    ROS_INFO("POSE");
-//    AbstractTransform* transform = new Transform();
-//    geometry_msgs::PoseStamped pose_robot;
-//    pose_robot.pose.position.x = 0;
-//    pose_robot.pose.position.y = 0;
-//    path->setGoal(&pose_robot, msg.get(), transform);
-    //  pose_k.x = msg.get()->pose.position.x;
-    //  pose_k.y = msg.get()->pose.position.y;
-    //  pose_k.theta = tf::getYaw(msg.get()->pose.orientation);
-    //  ROS_INFO("Goal: [x: %f, y: %f, th: %f]", pose_k.x, pose_k.y, pose_k.theta);
+void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+  pose_robot.header = msg.get()->header;
+  const geometry_msgs::Pose pose_goal = msg.get()->pose;
+  ROS_INFO("Robot [%f, %f, %f]", pose_robot.pose.position.x, pose_robot.pose.position.y, tf::getYaw(pose_robot.pose.orientation));
+  ROS_INFO("Goal [%f, %f, %f]", pose_goal.position.x, pose_goal.position.y, tf::getYaw(pose_goal.orientation));
+  path->setGoal(&pose_robot, msg.get(), (AbstractTransform*) new Transform());
+  path->startController(&pose_robot, msg.get(), (AbstractTransform*) new Transform(), "robot", "odometry", "cmd_velocity");
 }
 
-discrete_controller::Command rate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal) {
-
-    ROS_INFO("Rate Action");
-    Transform zr(pose_robot);
-    ROS_INFO("zr [z1: %f, z2: %f, z3: %f]", zr.state.z1, zr.state.z2, zr.state.z3);
-    Transform zk(pose_goal);
-    ROS_INFO("zk [z1: %f, z2: %f, z3: %f]", zk.state.z1, zk.state.z2, zk.state.z3);
-    alpha = (zk - zr) / delta;
-    ROS_INFO("alpha [z1: %f, z2: %f, z3: %f]", alpha.state.z1, alpha.state.z2, alpha.state.z3);
-
-    cmd.u1 = alpha.state.z1;
-    cmd.u2 = (-alpha.state.z2 + (4 * alpha.state.z3) / (delta * alpha.state.z1) - (4 * zr.state.z2) / (delta));
-
-    ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
-    return cmd;
+void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+  pose_robot.pose = msg.get()->pose.pose;
 }
 
-discrete_controller::Command multirate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal) {
-    ROS_INFO("MultiRate Action");
-    double u21 = cmd.u2;
-    cmd.u2 = (2 * alpha.state.z2 - u21);
+motion_control::Velocity path_controller(motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
+{
+  motion_control::Velocity velocity;
+  double theta = tf::getYaw(pose_robot.pose.pose.orientation);
+  double error_x = posed.pose.position.x - pose_robot.pose.pose.position.x;
+  double error_y = posed.pose.position.y - pose_robot.pose.pose.position.y;
+  double error_th = tf::getYaw(posed.pose.orientation) - theta;
 
-    ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
-    return cmd;
+  double e1 = cos(theta) * error_x + sin(theta) * error_y;
+  double e2 = cos(theta) * error_y - sin(theta) * error_x;
+  double e3 = error_th;
+
+  double u1 = -e1;
+  double u2 = -e2 - e3;
+
+  velocity.lin_vel = velocityd.lin_vel * cos(e3) - u1;
+  velocity.ang_vel = velocityd.ang_vel - u2;
+  return velocity;
+}
+
+discrete_controller::Command rate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
+{
+  Transform zr(pose_robot);
+  //  ROS_INFO("zr [%f, %f, %f]", zr.state.z1, zr.state.z2, zr.state.z3);
+  Transform zk(pose_goal);
+  //  ROS_INFO("zk [z1: %f, z2: %f, z3: %f]", zk.state.z1, zk.state.z2, zk.state.z3);
+  alpha = (zk - zr) / delta;
+  //  ROS_INFO("alpha [%f, %f, %f]", alpha.state.z1, alpha.state.z2, alpha.state.z3);
+
+  cmd.u1 = alpha.state.z1;
+  cmd.u2 = (-alpha.state.z2 + (4 * alpha.state.z3) / (delta * alpha.state.z1) - (4 * zr.state.z2) / (delta));
+
+  //  ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
+  return cmd;
+}
+
+discrete_controller::Command multirate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
+{
+
+  double u21 = cmd.u2;
+  cmd.u2 = (2 * alpha.state.z2 - u21);
+
+  //  ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
+  return cmd;
 }
 
 /*
  * 
  */
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 
-    //Init the serial_motion_node
-    ros::init(argc, argv, "discrete_controller");
-    ros::NodeHandle nh;
+  //Init the serial_motion_node
+  ros::init(argc, argv, "discrete_controller");
+  ros::NodeHandle nh;
 
-    path = new PathPlotter(nh, "discrete", 2, 1000);
-    path->setTime(10);
-    path->setActionRate(rate_fnc);
-    path->setActionMultiRate(multirate_fnc);
+  path = new PathPlotter(nh, "discrete", 2, 1000);
+  path->setTime(10);
+  path->setActionRate(rate_fnc);
+  path->setActionMultiRate(multirate_fnc);
+  path->setPathController(path_controller);
 
-    ros::Subscriber goal = nh.subscribe("/move_base_simple/goal", 1000, poseCallback);
+  ros::Subscriber odometry = nh.subscribe("/robot/odometry", 1000, odometry_Callback);
+  ros::Subscriber goal = nh.subscribe("/move_base_simple/goal", 1000, poseCallback);
 
-    //Start controller
-    ROS_INFO("STARTED");
-    ros::spin();
+  ROS_INFO("Wait 2sec...");
+  sleep(2);
+  ROS_INFO("Ready!");
+  //Start controller
+  ROS_INFO("STARTED");
+  ros::spin();
 
 
-    return 0;
+  return 0;
 }
 

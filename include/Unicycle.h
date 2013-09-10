@@ -23,10 +23,11 @@ public:
     Unicycle(geometry_msgs::PoseStamped pose);
     Unicycle(const Unicycle& orig);
     virtual ~Unicycle();
-    void update(double rate_update);
+    void update(ros::Duration duration);
     void setVelocity(motion_control::Velocity vel);
     void setPose(geometry_msgs::PoseStamped pose);
     geometry_msgs::PoseStamped getPose();
+    ros::Time getTime();
 private:
     motion_control::Velocity velocity;
     //motion_control::Pose pose;

@@ -12,6 +12,9 @@
         <in>PathPlotter.h</in>
         <in>Unicycle.h</in>
       </df>
+      <df name="launch">
+        <in>remote.launch</in>
+      </df>
       <df name="msg">
       </df>
       <df name="src">
