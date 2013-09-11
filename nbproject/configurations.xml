@@ -12,7 +12,8 @@
         <in>Unicycle.h</in>
       </df>
       <df name="launch">
-        <in>remote.launch</in>
+        <in>gui_control.launch</in>
+        <in>gui_teleop_control.launch</in>
       </df>
       <df name="src">
         <df name="transformation">
@@ -168,7 +169,9 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="launch/remote.launch" ex="false" tool="3" flavor2="0">
+      <item path="launch/gui_control.launch" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="launch/gui_teleop_control.launch" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/MultiRate.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>

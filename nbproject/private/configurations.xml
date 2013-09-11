@@ -13,7 +13,8 @@
         <in>Unicycle.h</in>
       </df>
       <df name="launch">
-        <in>remote.launch</in>
+        <in>gui_control.launch</in>
+        <in>gui_teleop_control.launch</in>
       </df>
       <df name="msg">
       </df>
