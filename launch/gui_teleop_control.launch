@@ -1,5 +1,4 @@
 <launch>
-    <!-- -->
     <include file="$(find discrete_controller)/launch/gui_control.launch" /> 
     <include file="$(find mouse3d_telop)/launch/control.launch" /> 
 </launch>
