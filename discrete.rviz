@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Grid1
         - /Odometry1
         - /RobotModel1/Links1
         - /RobotModel1/Links1/base_link1
@@ -34,7 +35,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 1
+      Cell Size: 0.3
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -48,7 +49,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
     - Angle Tolerance: 0.1
@@ -138,6 +139,13 @@ Visualization Manager:
       Shape: Arrow
       Topic: /discrete/desidered_unicycle
       Value: true
+    - Arrow Length: 0.3
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Name: PoseArray
+      Topic: /discrete/pose_step
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -189,5 +197,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 75
+  X: 68
   Y: 25

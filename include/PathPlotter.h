@@ -14,17 +14,19 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseArray.h>
 #include <discrete_controller/Command.h>
 
 const std::string goal_string = "goal";
 const std::string path_string = "path";
 const std::string command_string = "command";
 const std::string desidered_unicycle_string = "desidered_unicycle";
+const std::string pose_array_string = "pose_step";
 
 class PathPlotter {
 public:
     typedef discrete_controller::Command(* ActionType) (int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
-    typedef motion_control::Velocity(* ControllerType) (motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
+    typedef motion_control::Velocity(* ControllerType) (ros::NodeHandle nh, motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
     PathPlotter(const ros::NodeHandle& nh, std::string name, int rate, int length);
     PathPlotter(const PathPlotter& orig);
     virtual ~PathPlotter();
@@ -41,6 +43,10 @@ public:
     void startController(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform, std::string robot, std::string odometry, std::string velocity);
     void setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform);
 private:
+    std::string name_;  //Name param and topic control
+    //step trajectory
+    int length_step_, counter_step_pose_array_, step_pose_array_;
+    geometry_msgs::PoseArray array_step_;
     // Actions for multirate
     ActionType *pActions;
     ActionType actionRate_, actionStop_;
@@ -63,7 +69,9 @@ private:
     discrete_controller::Command cmd_controller_; //Command to drive robot
     ros::Subscriber sub_odometry_;
     ros::Publisher pub_path_control_;
+    ros::Publisher pub_array_step_; //Array pose robots
     ControllerType controller_;
+    
 
     discrete_controller::Command stop(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
     discrete_controller::Command rateStep(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);

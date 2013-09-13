@@ -8,7 +8,6 @@
           <in>Transform.h</in>
           <in>TransformFirst.h</in>
         </df>
-        <in>MultiRate.h</in>
         <in>PathPlotter.h</in>
         <in>Unicycle.h</in>
       </df>
@@ -23,11 +22,9 @@
           <in>Transform.cpp</in>
           <in>TransformFirst.cpp</in>
         </df>
-        <in>MultiRate.cpp</in>
         <in>PathPlotter.cpp</in>
         <in>Unicycle.cpp</in>
         <in>discrete_controller.cpp</in>
-        <in>discrete_node.cpp</in>
       </df>
     </df>
   </logicalFolder>

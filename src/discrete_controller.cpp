@@ -27,6 +27,10 @@ Transform alpha;
 discrete_controller::Command cmd;
 geometry_msgs::PoseStamped pose_robot;
 
+const std::string name_node = "discrete";
+const std::string gain_string = "gain";
+double k1, k2, k3;
+
 void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
   pose_robot.header = msg.get()->header;
@@ -42,7 +46,7 @@ void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
   pose_robot.pose = msg.get()->pose.pose;
 }
 
-motion_control::Velocity path_controller(motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
+motion_control::Velocity path_controller(ros::NodeHandle nh, motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
 {
   motion_control::Velocity velocity;
   double theta = tf::getYaw(pose_robot.pose.pose.orientation);
@@ -54,8 +58,8 @@ motion_control::Velocity path_controller(motion_control::Velocity velocityd, geo
   double e2 = cos(theta) * error_y - sin(theta) * error_x;
   double e3 = error_th;
 
-  double u1 = -e1;
-  double u2 = -e2 - e3;
+  double u1 = -k1*e1;
+  double u2 = -k2 * e2 - k3*e3;
 
   velocity.lin_vel = velocityd.lin_vel * cos(e3) - u1;
   velocity.ang_vel = velocityd.ang_vel - u2;
@@ -98,7 +102,13 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "discrete_controller");
   ros::NodeHandle nh;
 
-  path = new PathPlotter(nh, "discrete", 2, 1000);
+  //Gain controller
+  nh.param(name_node + "/" + gain_string + "/" + "K1", k1, 1.0);
+  nh.param(name_node + "/" + gain_string + "/" + "K2", k2, 1.0);
+  nh.param(name_node + "/" + gain_string + "/" + "K3", k3, 1.0);
+  
+  ROS_INFO("Gain [k1: %f, k3: %f, k2: %f]", k1, k2, k3);
+  path = new PathPlotter(nh, name_node, 2, 1000);
   path->setTime(10);
   path->setActionRate(rate_fnc);
   path->setActionMultiRate(multirate_fnc);
