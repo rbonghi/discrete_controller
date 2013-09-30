@@ -38,7 +38,7 @@ Unicycle::~Unicycle()
 
 void Unicycle::update(ros::Duration duration)
 {
-  double rate_update = duration.sec + ((double) duration.nsec) / 1000000000;
+  double rate_update = duration.toSec();
   //  ROS_INFO("rate: %f", rate_update);
   double th_old = tf::getYaw(pose.pose.orientation);
   double th_new = th_old + velocity.ang_vel*rate_update;

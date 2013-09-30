@@ -15,6 +15,8 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, std::string name, int multir
   pub_path_ = nh_.advertise<nav_msgs::Path>("/" + name + "/" + path_string, 1000);
   pub_multirate_ = nh_.advertise<discrete_controller::Command>("/" + name + "/" + command_string, 1000);
   pub_desidered_unicycle_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + desidered_unicycle_string, 1000);
+  //Emergency stop control
+  control_stop_srv_ = nh_.advertiseService(control_stop_string, &PathPlotter::control_stop_Callback, this);
   name_ = name;
   multirate_ = multirate;
   length_ = length;
@@ -31,6 +33,7 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, std::string name, int multir
 
   //path controller
   controller_ == NULL;
+  transform_controller_ = NULL;
 
   //parameter step trajectory
   length_step_ = 2;
@@ -289,4 +292,18 @@ void PathPlotter::draw_path(AbstractTransform* transform, discrete_controller::C
       counter_step_pose_array_++;
     }
   }
+}
+
+bool PathPlotter::control_stop_Callback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)
+{
+  ROS_INFO("EMERGENCY STOP!");
+  stop_ = false;
+  timer_.stop();
+  cmd_controller_ = stop(pose_robot_controller_, pose_goal_controller_);
+  if (transform_controller_ != NULL)
+  {
+    motion_control::Velocity velocity = transform_controller_->control(cmd_controller_);
+    pub_path_control_.publish(velocity);
+  }
+  return true;
 }

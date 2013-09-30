@@ -16,12 +16,14 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseArray.h>
 #include <discrete_controller/Command.h>
+#include <std_srvs/Empty.h>
 
 const std::string goal_string = "goal";
 const std::string path_string = "path";
 const std::string command_string = "command";
 const std::string desidered_unicycle_string = "desidered_unicycle";
 const std::string pose_array_string = "pose_step";
+const std::string control_stop_string = "/control/emergency";
 
 class PathPlotter {
 public:
@@ -72,6 +74,7 @@ private:
     ros::Publisher pub_array_step_; //Array pose robots
     ControllerType controller_;
     
+    ros::ServiceServer control_stop_srv_;
 
     discrete_controller::Command stop(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
     discrete_controller::Command rateStep(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
@@ -81,6 +84,8 @@ private:
     void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg);
     void timerCallback(const ros::TimerEvent& event);
     motion_control::Velocity path_controller (motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
+    
+    bool control_stop_Callback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 };
 
 #endif	/* PATHPLOTTER_H */

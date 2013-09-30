@@ -8,11 +8,8 @@
           <in>Transform.h</in>
           <in>TransformFirst.h</in>
         </df>
+        <in>PathPlotter.h</in>
         <in>Unicycle.h</in>
-      </df>
-      <df name="launch">
-        <in>gui_control.launch</in>
-        <in>gui_teleop_control.launch</in>
       </df>
       <df name="src">
         <df name="transformation">
@@ -40,8 +37,14 @@
                      projectFiles="true">
         <itemPath>../motion_control/src/serial_motion/RosControllerSerial.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="teleop_motion"
+                     displayName="teleop_motion"
+                     projectFiles="true">
+        <itemPath>../motion_control/src/teleop_motion/Keyboard.cpp</itemPath>
+      </logicalFolder>
       <itemPath>../motion_control/src/Serial.cpp</itemPath>
       <itemPath>../motion_control/src/over_motion_node.cpp</itemPath>
+      <itemPath>../motion_control/src/robot_teleop_node.cpp</itemPath>
       <itemPath>../motion_control/src/serial_motion_node.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -115,6 +118,11 @@
         <ccTool>
         </ccTool>
       </item>
+      <item path="../motion_control/src/robot_teleop_node.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="../motion_control/src/serial_motion/RosControllerSerial.cpp"
             ex="false"
             tool="1"
@@ -128,6 +136,11 @@
             flavor2="4">
         <ccTool>
         </ccTool>
+      </item>
+      <item path="../motion_control/src/teleop_motion/Keyboard.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
       </item>
       <folder path="discrete_controller">
         <ccTool>
@@ -150,6 +163,8 @@
           </preprocessorList>
         </ccTool>
       </folder>
+      <item path="include/PathPlotter.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/Unicycle.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/transformation/AbstractTransform.h"
@@ -164,24 +179,28 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="launch/gui_control.launch" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="launch/gui_teleop_control.launch" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="src/PathPlotter.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/PathPlotter.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
       <item path="src/Unicycle.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
         </ccTool>
       </item>
-      <item path="src/discrete_controller.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/discrete_controller.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <item path="src/transformation/Transform.cpp" ex="false" tool="1" flavor2="0">
+      <item path="src/transformation/Transform.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
       <item path="src/transformation/TransformFirst.cpp"
             ex="false"
             tool="1"
-            flavor2="0">
+            flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
     </conf>
   </confs>

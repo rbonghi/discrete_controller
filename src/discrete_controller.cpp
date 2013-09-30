@@ -38,7 +38,7 @@ void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
   ROS_INFO("Robot [%f, %f, %f]", pose_robot.pose.position.x, pose_robot.pose.position.y, tf::getYaw(pose_robot.pose.orientation));
   ROS_INFO("Goal [%f, %f, %f]", pose_goal.position.x, pose_goal.position.y, tf::getYaw(pose_goal.orientation));
   path->setGoal(&pose_robot, msg.get(), (AbstractTransform*) new Transform());
-  path->startController(&pose_robot, msg.get(), (AbstractTransform*) new Transform(), "robot", "odometry", "cmd_velocity");
+  path->startController(&pose_robot, msg.get(), (AbstractTransform*) new Transform(), "robot", "odometry", "command/velocity");
 }
 
 void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
