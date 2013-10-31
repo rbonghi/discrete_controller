@@ -8,8 +8,8 @@
 #ifndef TRANSFORM_H
 #define	TRANSFORM_H
 
-#include <motion_control/Pose.h>
-#include <motion_control/Velocity.h>
+#include <serial_bridge/Pose.h>
+#include <serial_bridge/Velocity.h>
 #include <discrete_controller/Transform.h>
 #include <discrete_controller/Command.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -18,19 +18,19 @@
 class Transform : public AbstractTransform {
 public:
     Transform();
-    Transform(const motion_control::Pose *pose);
+    Transform(const serial_bridge::Pose *pose);
     Transform(const geometry_msgs::PoseStamped *pose);
     Transform(const Transform& orig);
     virtual ~Transform();
-    void setPose(const motion_control::Pose *pose);
+    void setPose(const serial_bridge::Pose *pose);
     void setPoseStamped(const geometry_msgs::PoseStamped *pose);
-    motion_control::Velocity control(discrete_controller::Command cmd);
+    serial_bridge::Velocity control(discrete_controller::Command cmd);
     Transform operator-(const Transform& p);
     Transform operator/(const double& p);
 
     discrete_controller::Transform state;
 private:
-    discrete_controller::Transform transformPose(const motion_control::Pose *pose);
+    discrete_controller::Transform transformPose(const serial_bridge::Pose *pose);
     discrete_controller::Transform transformPoseStamped(const geometry_msgs::PoseStamped *pose);
 };
 

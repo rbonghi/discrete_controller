@@ -14,8 +14,8 @@
 
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
-#include <motion_control/Velocity.h>
-#include <motion_control/Pose.h>
+#include <serial_bridge/Velocity.h>
+#include <serial_bridge/Pose.h>
 #include <discrete_controller/Command.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
@@ -46,9 +46,9 @@ void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
   pose_robot.pose = msg.get()->pose.pose;
 }
 
-motion_control::Velocity path_controller(ros::NodeHandle nh, motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
+serial_bridge::Velocity path_controller(ros::NodeHandle nh, serial_bridge::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
 {
-  motion_control::Velocity velocity;
+  serial_bridge::Velocity velocity;
   double theta = tf::getYaw(pose_robot.pose.pose.orientation);
   double error_x = posed.pose.position.x - pose_robot.pose.pose.position.x;
   double error_y = posed.pose.position.y - pose_robot.pose.pose.position.y;

@@ -13,7 +13,7 @@ Transform::Transform() {
     state.z3 = 0;
 }
 
-Transform::Transform(const motion_control::Pose *pose) {
+Transform::Transform(const serial_bridge::Pose *pose) {
     state = transformPose(pose);
 }
 
@@ -27,7 +27,7 @@ Transform::Transform(const Transform& orig) {
 Transform::~Transform() {
 }
 
-void Transform::setPose(const motion_control::Pose *pose) {
+void Transform::setPose(const serial_bridge::Pose *pose) {
     state = transformPose(pose);
 }
 
@@ -35,7 +35,7 @@ void Transform::setPoseStamped(const geometry_msgs::PoseStamped *pose) {
     state = transformPoseStamped(pose);
 }
 
-discrete_controller::Transform Transform::transformPose(const motion_control::Pose *pose) {
+discrete_controller::Transform Transform::transformPose(const serial_bridge::Pose *pose) {
     discrete_controller::Transform state;
     double costh = cos(pose->theta);
     double sinth = sin(pose->theta);
@@ -56,8 +56,8 @@ discrete_controller::Transform Transform::transformPoseStamped(const geometry_ms
     return state;
 };
 
-motion_control::Velocity Transform::control(discrete_controller::Command cmd) {
-    motion_control::Velocity velocity;
+serial_bridge::Velocity Transform::control(discrete_controller::Command cmd) {
+    serial_bridge::Velocity velocity;
     velocity.lin_vel = cmd.u2 + state.z3 * cmd.u1;
     velocity.ang_vel = cmd.u1;
     return velocity;

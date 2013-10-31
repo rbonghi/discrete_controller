@@ -58,7 +58,7 @@ void Unicycle::update(ros::Duration duration)
   }
 }
 
-void Unicycle::setVelocity(motion_control::Velocity vel)
+void Unicycle::setVelocity(serial_bridge::Velocity vel)
 {
   velocity = vel;
 }

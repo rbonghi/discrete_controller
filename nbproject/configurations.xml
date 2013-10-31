@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="89">
+<configurationDescriptor version="90">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <df root="." name="discrete_controller">
-      <df name="include">
-        <df name="transformation">
-          <in>AbstractTransform.h</in>
-          <in>Transform.h</in>
-          <in>TransformFirst.h</in>
-        </df>
-        <in>PathPlotter.h</in>
-        <in>Unicycle.h</in>
-      </df>
+    <df root="." name="0">
       <df name="src">
         <df name="transformation">
           <in>Transform.cpp</in>
@@ -43,8 +34,10 @@
         <itemPath>../motion_control/src/teleop_motion/Keyboard.cpp</itemPath>
       </logicalFolder>
       <itemPath>../motion_control/src/Serial.cpp</itemPath>
+      <itemPath>../maestro_node/src/Serial.cpp</itemPath>
       <itemPath>../motion_control/src/over_motion_node.cpp</itemPath>
       <itemPath>../motion_control/src/robot_teleop_node.cpp</itemPath>
+      <itemPath>../serial_bridge/src/serial_bridge_node.cpp</itemPath>
       <itemPath>../motion_control/src/serial_motion_node.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -62,7 +55,6 @@
   <confs>
     <conf name="Default" type="0">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
         <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -86,8 +78,29 @@
           </ccTool>
         </makeTool>
       </makefileType>
+      <item path="../maestro_node/src/Serial.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../maestro_node/include</pElem>
+            <pElem>../../build/maestro_node</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ROS_PACKAGE_NAME="maestro_node"</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
       <item path="../motion_control/src/Serial.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="../motion_control/src/over_motion_node.cpp"
@@ -95,6 +108,13 @@
             tool="1"
             flavor2="4">
         <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="../motion_control/src/over_tcp_motion/ClientTcp.cpp"
@@ -121,7 +141,16 @@
       <item path="../motion_control/src/robot_teleop_node.cpp"
             ex="false"
             tool="1"
-            flavor2="0">
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
+        </ccTool>
       </item>
       <item path="../motion_control/src/serial_motion/RosControllerSerial.cpp"
             ex="false"
@@ -135,14 +164,38 @@
             tool="1"
             flavor2="4">
         <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="../motion_control/src/teleop_motion/Keyboard.cpp"
             ex="false"
             tool="1"
-            flavor2="0">
+            flavor2="4">
+        <ccTool>
+        </ccTool>
       </item>
-      <folder path="discrete_controller">
+      <item path="../serial_bridge/src/serial_bridge_node.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+        <ccTool>
+          <incDir>
+            <pElem>../serial_bridge/include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/serial_bridge</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ROS_PACKAGE_NAME="serial_bridge"</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <folder path="0">
         <ccTool>
           <incDir>
             <pElem>include</pElem>
@@ -153,32 +206,44 @@
       </folder>
       <folder path="src">
         <ccTool>
-          <incDir>
-            <pElem>../motion_control/include</pElem>
-            <pElem>/opt/ros/groovy/include</pElem>
-            <pElem>../../build/motion_control</pElem>
-          </incDir>
           <preprocessorList>
             <Elem>ROS_PACKAGE_NAME="motion_control"</Elem>
           </preprocessorList>
         </ccTool>
       </folder>
-      <item path="include/PathPlotter.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/Unicycle.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/transformation/AbstractTransform.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="include/transformation/Transform.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="include/transformation/TransformFirst.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
+      <folder path="src/over_tcp_motion">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="src/serial_motion">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="src/teleop_motion">
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>/opt/ros/groovy/include</pElem>
+            <pElem>../../build/discrete_controller</pElem>
+            <pElem>../motion_control/include</pElem>
+            <pElem>../../build/motion_control</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
       <item path="src/PathPlotter.cpp" ex="false" tool="1" flavor2="4">
         <ccTool>
         </ccTool>

@@ -48,10 +48,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES discrete_controller motion_control
+# INCLUDE_DIRS include
+#  LIBRARIES discrete_controller motion_control
   CATKIN_DEPENDS roscpp std_msgs
-  DEPENDS system_lib
+#  DEPENDS system_lib
 )
 
 ###########
@@ -60,9 +60,8 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -74,9 +73,9 @@ set(discrete_SRC
     src/Unicycle.cpp
 )
 
-add_executable(discrete_node ${discrete_SRC})
-target_link_libraries(discrete_node ${catkin_LIBRARIES})
-add_dependencies(discrete_node discrete_gencpp)
+add_executable(discrete_controller_node ${discrete_SRC})
+target_link_libraries(discrete_controller_node ${catkin_LIBRARIES})
+add_dependencies(discrete_controller_node discrete_gencpp)
 
 ## Declare a cpp library
 # add_library(discrete_controller

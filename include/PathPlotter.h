@@ -28,7 +28,7 @@ const std::string control_stop_string = "/control/emergency";
 class PathPlotter {
 public:
     typedef discrete_controller::Command(* ActionType) (int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
-    typedef motion_control::Velocity(* ControllerType) (ros::NodeHandle nh, motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
+    typedef serial_bridge::Velocity(* ControllerType) (ros::NodeHandle nh, serial_bridge::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
     PathPlotter(const ros::NodeHandle& nh, std::string name, int rate, int length);
     PathPlotter(const PathPlotter& orig);
     virtual ~PathPlotter();
@@ -83,7 +83,7 @@ private:
 
     void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg);
     void timerCallback(const ros::TimerEvent& event);
-    motion_control::Velocity path_controller (motion_control::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
+    serial_bridge::Velocity path_controller (serial_bridge::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
     
     bool control_stop_Callback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 };

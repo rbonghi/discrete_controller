@@ -7,7 +7,7 @@
 
 #include "transformation/TransformFirst.h"
 #include <math.h>
-#include <motion_control/Pose.h>
+#include <serial_bridge/Pose.h>
 #include <discrete_controller/Transform.h>
 #include <discrete_controller/Command.h>
 
@@ -17,7 +17,7 @@ TransformFirst::TransformFirst() {
     state.z3 = 0;
 }
 
-TransformFirst::TransformFirst(const motion_control::Pose *pose) {
+TransformFirst::TransformFirst(const serial_bridge::Pose *pose) {
     state = transformPose(pose);
 }
 
@@ -31,7 +31,7 @@ TransformFirst::TransformFirst(const TransformFirst& orig) {
 TransformFirst::~TransformFirst() {
 }
 
-discrete_controller::Transform TransformFirst::transformPose(const motion_control::Pose *pose) {
+discrete_controller::Transform TransformFirst::transformPose(const serial_bridge::Pose *pose) {
     discrete_controller::Transform state;
     state.z1 = pose->x;
     state.z2 = tan(pose->theta);
@@ -47,7 +47,7 @@ discrete_controller::Transform TransformFirst::transformPoseStamped(const geomet
     return state;
 };
 
-void TransformFirst::setPose(const motion_control::Pose *pose) {
+void TransformFirst::setPose(const serial_bridge::Pose *pose) {
     state = transformPose(pose);
 }
 
@@ -55,17 +55,17 @@ void TransformFirst::setPoseStamped(const geometry_msgs::PoseStamped *pose) {
     state = transformPoseStamped(pose);
 }
 
-motion_control::Pose TransformFirst::antiTransform() {
-    motion_control::Pose pose;
+serial_bridge::Pose TransformFirst::antiTransform() {
+    serial_bridge::Pose pose;
     pose.x = state.z1;
     pose.y = state.z3;
     pose.theta = atan(state.z2);
     return pose;
 }
 
-motion_control::Velocity TransformFirst::control(discrete_controller::Command cmd) {
+serial_bridge::Velocity TransformFirst::control(discrete_controller::Command cmd) {
     float costh = cos(antiTransform().theta);
-    motion_control::Velocity velocity;
+    serial_bridge::Velocity velocity;
     velocity.lin_vel = cmd.u1 / costh;
     velocity.ang_vel = cmd.u2 * (pow(costh, 2));
     return velocity;

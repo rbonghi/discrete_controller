@@ -11,8 +11,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include <motion_control/Pose.h>
-#include <motion_control/Velocity.h>
+#include <serial_bridge/Pose.h>
+#include <serial_bridge/Velocity.h>
 
 #include <tf/transform_broadcaster.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -24,13 +24,13 @@ public:
     Unicycle(const Unicycle& orig);
     virtual ~Unicycle();
     void update(ros::Duration duration);
-    void setVelocity(motion_control::Velocity vel);
+    void setVelocity(serial_bridge::Velocity vel);
     void setPose(geometry_msgs::PoseStamped pose);
     geometry_msgs::PoseStamped getPose();
     ros::Time getTime();
 private:
-    motion_control::Velocity velocity;
-    //motion_control::Pose pose;
+    serial_bridge::Velocity velocity;
+    //serial_bridge::Pose pose;
     ros::Time current_time_;    //ROS time
     geometry_msgs::PoseStamped pose;
 };
