@@ -7,7 +7,7 @@
 
 #include "transformation/TransformFirst.h"
 #include <math.h>
-#include <serial_bridge/Pose.h>
+#include <nav_msgs/Odometry.h>
 #include <discrete_controller/Transform.h>
 #include <discrete_controller/Command.h>
 
@@ -17,7 +17,7 @@ TransformFirst::TransformFirst() {
     state.z3 = 0;
 }
 
-TransformFirst::TransformFirst(const serial_bridge::Pose *pose) {
+TransformFirst::TransformFirst(const nav_msgs::Odometry *pose) {
     state = transformPose(pose);
 }
 
@@ -31,11 +31,12 @@ TransformFirst::TransformFirst(const TransformFirst& orig) {
 TransformFirst::~TransformFirst() {
 }
 
-discrete_controller::Transform TransformFirst::transformPose(const serial_bridge::Pose *pose) {
+discrete_controller::Transform TransformFirst::transformPose(const nav_msgs::Odometry *pose) {
     discrete_controller::Transform state;
-    state.z1 = pose->x;
-    state.z2 = tan(pose->theta);
-    state.z3 = pose->y;
+    double theta = tf::getYaw(pose->pose.pose.orientation);
+    state.z1 = pose->pose.pose.position.x;
+    state.z2 = tan(theta);
+    state.z3 = pose->pose.pose.position.y;
     return state;
 }
 
@@ -47,7 +48,7 @@ discrete_controller::Transform TransformFirst::transformPoseStamped(const geomet
     return state;
 };
 
-void TransformFirst::setPose(const serial_bridge::Pose *pose) {
+void TransformFirst::setPose(const nav_msgs::Odometry *pose) {
     state = transformPose(pose);
 }
 
@@ -55,19 +56,20 @@ void TransformFirst::setPoseStamped(const geometry_msgs::PoseStamped *pose) {
     state = transformPoseStamped(pose);
 }
 
-serial_bridge::Pose TransformFirst::antiTransform() {
-    serial_bridge::Pose pose;
-    pose.x = state.z1;
-    pose.y = state.z3;
-    pose.theta = atan(state.z2);
+nav_msgs::Odometry TransformFirst::antiTransform() {
+    nav_msgs::Odometry pose;
+    pose.pose.pose.position.x = state.z1;
+    pose.pose.pose.position.y = state.z3;
+    pose.pose.pose.orientation = tf::createQuaternionMsgFromYaw(atan(state.z2));
     return pose;
 }
 
-serial_bridge::Velocity TransformFirst::control(discrete_controller::Command cmd) {
-    float costh = cos(antiTransform().theta);
-    serial_bridge::Velocity velocity;
-    velocity.lin_vel = cmd.u1 / costh;
-    velocity.ang_vel = cmd.u2 * (pow(costh, 2));
+geometry_msgs::Twist TransformFirst::control(discrete_controller::Command cmd) {
+    double theta = tf::getYaw(antiTransform().pose.pose.orientation);
+    float costh = cos(theta);
+    geometry_msgs::Twist velocity;
+    velocity.linear.x = cmd.u1 / costh;
+    velocity.angular.z = cmd.u2 * (pow(costh, 2));
     return velocity;
 }
 

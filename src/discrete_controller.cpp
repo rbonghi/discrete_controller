@@ -14,8 +14,9 @@
 
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
-#include <serial_bridge/Velocity.h>
-#include <serial_bridge/Pose.h>
+#include <geometry_msgs/Twist.h>
+//#include <serial_bridge/Velocity.h>
+//#include <serial_bridge/Pose.h>
 #include <discrete_controller/Command.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
@@ -46,9 +47,9 @@ void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
   pose_robot.pose = msg.get()->pose.pose;
 }
 
-serial_bridge::Velocity path_controller(ros::NodeHandle nh, serial_bridge::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
+geometry_msgs::Twist path_controller(ros::NodeHandle nh, geometry_msgs::Twist velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
 {
-  serial_bridge::Velocity velocity;
+  geometry_msgs::Twist velocity;
   double theta = tf::getYaw(pose_robot.pose.pose.orientation);
   double error_x = posed.pose.position.x - pose_robot.pose.pose.position.x;
   double error_y = posed.pose.position.y - pose_robot.pose.pose.position.y;
@@ -61,8 +62,8 @@ serial_bridge::Velocity path_controller(ros::NodeHandle nh, serial_bridge::Veloc
   double u1 = -k1*e1;
   double u2 = -k2 * e2 - k3*e3;
 
-  velocity.lin_vel = velocityd.lin_vel * cos(e3) - u1;
-  velocity.ang_vel = velocityd.ang_vel - u2;
+  velocity.linear.x = velocityd.linear.x * cos(e3) - u1;
+  velocity.angular.z = velocityd.angular.z - u2;
   return velocity;
 }
 

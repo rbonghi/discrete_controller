@@ -8,8 +8,8 @@
 #ifndef TRANSFORMFIRST_H
 #define	TRANSFORMFIRST_H
 
-#include <serial_bridge/Pose.h>
-#include <serial_bridge/Velocity.h>
+#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
 #include <discrete_controller/Transform.h>
 #include <discrete_controller/Command.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -18,21 +18,21 @@
 class TransformFirst : public AbstractTransform {
 public:
     TransformFirst();
-    TransformFirst(const serial_bridge::Pose *pose);
+    TransformFirst(const nav_msgs::Odometry *pose);
     TransformFirst(const geometry_msgs::PoseStamped *pose);
     TransformFirst(const TransformFirst& orig);
     virtual ~TransformFirst();
     
-    void setPose(const serial_bridge::Pose *pose);
+    void setPose(const nav_msgs::Odometry *pose);
     void setPoseStamped(const geometry_msgs::PoseStamped *pose);
-    serial_bridge::Pose antiTransform();
-    serial_bridge::Velocity control(discrete_controller::Command cmd);
+    nav_msgs::Odometry antiTransform();
+    geometry_msgs::Twist control(discrete_controller::Command cmd);
     TransformFirst operator-(const TransformFirst& p);
     TransformFirst operator/(const double& p);
     
     discrete_controller::Transform state;
 private:
-    discrete_controller::Transform transformPose(const serial_bridge::Pose *pose);
+    discrete_controller::Transform transformPose(const nav_msgs::Odometry *pose);
     discrete_controller::Transform transformPoseStamped(const geometry_msgs::PoseStamped *pose);
 };
 

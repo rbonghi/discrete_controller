@@ -151,7 +151,7 @@ void PathPlotter::timerCallback(const ros::TimerEvent& event)
     {
       timer_.stop();
       cmd_controller_ = stop(pose_robot_controller_, pose_goal_controller_);
-      serial_bridge::Velocity velocity = transform_controller_->control(cmd_controller_);
+      geometry_msgs::Twist velocity = transform_controller_->control(cmd_controller_);
       pub_path_control_.publish(velocity);
     }
     else
@@ -182,24 +182,24 @@ void PathPlotter::odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
   //Generator desidered position
   geometry_msgs::PoseStamped pose_temp = unicycle_->getPose();
   transform_controller_->setPoseStamped(&pose_temp);
-  serial_bridge::Velocity velocityd = transform_controller_->control(cmd_controller_);
+  geometry_msgs::Twist velocityd = transform_controller_->control(cmd_controller_);
   unicycle_->setVelocity(velocityd);
   unicycle_->update(update);
   geometry_msgs::PoseStamped posed = unicycle_->getPose();
   pub_desidered_unicycle_.publish(posed);
   // Start control path
-  serial_bridge::Velocity velocity = path_controller(velocityd, posed, *msg.get());
+  geometry_msgs::Twist velocity = path_controller(velocityd, posed, *msg.get());
   pub_path_control_.publish(velocity);
 }
 
-serial_bridge::Velocity PathPlotter::path_controller(serial_bridge::Velocity velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
+geometry_msgs::Twist PathPlotter::path_controller(geometry_msgs::Twist velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot)
 {
   if (controller_ == NULL)
   {
     ROS_ERROR("Never path controller function");
-    serial_bridge::Velocity velocity;
-    velocity.lin_vel = 0;
-    velocity.ang_vel = 0;
+    geometry_msgs::Twist velocity;
+    velocity.linear.x = 0;
+    velocity.angular.z = 0;
     return velocity;
   }
   else
@@ -220,7 +220,7 @@ void PathPlotter::startController(const geometry_msgs::PoseStamped* pose_robot, 
   pose_goal_controller_ = pose_goal;
   transform_controller_ = transform;
   sub_odometry_ = nh_.subscribe("/" + robot + "/" + odometry, 1000, &PathPlotter::odometry_Callback, this);
-  pub_path_control_ = nh_.advertise<serial_bridge::Velocity>("/" + robot + "/" + velocity, 1000);
+  pub_path_control_ = nh_.advertise<geometry_msgs::Twist>("/" + robot + "/" + velocity, 1000);
   geometry_msgs::PoseStamped pose;
   pose.pose = pose_robot->pose;
   pose.header = pose_robot->header;
@@ -277,7 +277,7 @@ void PathPlotter::draw_path(AbstractTransform* transform, discrete_controller::C
   {
     geometry_msgs::PoseStamped pose = unicycle_->getPose();
     transform->setPoseStamped(&pose);
-    serial_bridge::Velocity velocity = transform->control(cmd);
+    geometry_msgs::Twist velocity = transform->control(cmd);
     unicycle_->setVelocity(velocity);
     unicycle_->update(ros::Duration(update));
     if (i < (counter + 1) * step)
@@ -302,7 +302,7 @@ bool PathPlotter::control_stop_Callback(std_srvs::Empty::Request&, std_srvs::Emp
   cmd_controller_ = stop(pose_robot_controller_, pose_goal_controller_);
   if (transform_controller_ != NULL)
   {
-    serial_bridge::Velocity velocity = transform_controller_->control(cmd_controller_);
+    geometry_msgs::Twist velocity = transform_controller_->control(cmd_controller_);
     pub_path_control_.publish(velocity);
   }
   return true;

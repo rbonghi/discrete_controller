@@ -11,8 +11,10 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include <serial_bridge/Pose.h>
-#include <serial_bridge/Velocity.h>
+//#include <serial_bridge/Pose.h>
+//#include <serial_bridge/Velocity.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Twist.h>
 
 #include <tf/transform_broadcaster.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -24,12 +26,12 @@ public:
     Unicycle(const Unicycle& orig);
     virtual ~Unicycle();
     void update(ros::Duration duration);
-    void setVelocity(serial_bridge::Velocity vel);
+    void setVelocity(geometry_msgs::Twist vel);
     void setPose(geometry_msgs::PoseStamped pose);
     geometry_msgs::PoseStamped getPose();
     ros::Time getTime();
 private:
-    serial_bridge::Velocity velocity;
+    geometry_msgs::Twist velocity;
     //serial_bridge::Pose pose;
     ros::Time current_time_;    //ROS time
     geometry_msgs::PoseStamped pose;

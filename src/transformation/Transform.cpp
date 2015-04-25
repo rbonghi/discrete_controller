@@ -13,7 +13,7 @@ Transform::Transform() {
     state.z3 = 0;
 }
 
-Transform::Transform(const serial_bridge::Pose *pose) {
+Transform::Transform(const nav_msgs::Odometry *pose) {
     state = transformPose(pose);
 }
 
@@ -27,7 +27,7 @@ Transform::Transform(const Transform& orig) {
 Transform::~Transform() {
 }
 
-void Transform::setPose(const serial_bridge::Pose *pose) {
+void Transform::setPose(const nav_msgs::Odometry *pose) {
     state = transformPose(pose);
 }
 
@@ -35,13 +35,14 @@ void Transform::setPoseStamped(const geometry_msgs::PoseStamped *pose) {
     state = transformPoseStamped(pose);
 }
 
-discrete_controller::Transform Transform::transformPose(const serial_bridge::Pose *pose) {
+discrete_controller::Transform Transform::transformPose(const nav_msgs::Odometry *pose) {
     discrete_controller::Transform state;
-    double costh = cos(pose->theta);
-    double sinth = sin(pose->theta);
-    state.z1 = pose->theta;
-    state.z2 = pose->x * costh + pose->y * sinth;
-    state.z3 = pose->x * sinth - pose->y * costh;
+    double theta = tf::getYaw(pose->pose.pose.orientation);
+    double costh = cos(theta);
+    double sinth = sin(theta);
+    state.z1 = theta;
+    state.z2 = pose->pose.pose.position.x * costh + pose->pose.pose.position.y * sinth;
+    state.z3 = pose->pose.pose.position.x * sinth - pose->pose.pose.position.y * costh;
     return state;
 }
 
@@ -56,10 +57,10 @@ discrete_controller::Transform Transform::transformPoseStamped(const geometry_ms
     return state;
 };
 
-serial_bridge::Velocity Transform::control(discrete_controller::Command cmd) {
-    serial_bridge::Velocity velocity;
-    velocity.lin_vel = cmd.u2 + state.z3 * cmd.u1;
-    velocity.ang_vel = cmd.u1;
+geometry_msgs::Twist Transform::control(discrete_controller::Command cmd) {
+    geometry_msgs::Twist velocity;
+    velocity.linear.x = cmd.u2 + state.z3 * cmd.u1;
+    velocity.angular.z = cmd.u1;
     return velocity;
 }
 
