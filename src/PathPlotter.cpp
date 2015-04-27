@@ -219,8 +219,8 @@ void PathPlotter::startController(const geometry_msgs::PoseStamped* pose_robot, 
   pose_robot_controller_ = pose_robot;
   pose_goal_controller_ = pose_goal;
   transform_controller_ = transform;
-  sub_odometry_ = nh_.subscribe("/" + robot + "/" + odometry, 1000, &PathPlotter::odometry_Callback, this);
-  pub_path_control_ = nh_.advertise<geometry_msgs::Twist>("/" + robot + "/" + velocity, 1000);
+  sub_odometry_ = nh_.subscribe("/" + odometry, 1000, &PathPlotter::odometry_Callback, this);
+  pub_path_control_ = nh_.advertise<geometry_msgs::Twist>("/" + velocity, 1000);
   geometry_msgs::PoseStamped pose;
   pose.pose = pose_robot->pose;
   pose.header = pose_robot->header;

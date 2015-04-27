@@ -39,7 +39,7 @@ void poseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
   ROS_INFO("Robot [%f, %f, %f]", pose_robot.pose.position.x, pose_robot.pose.position.y, tf::getYaw(pose_robot.pose.orientation));
   ROS_INFO("Goal [%f, %f, %f]", pose_goal.position.x, pose_goal.position.y, tf::getYaw(pose_goal.orientation));
   path->setGoal(&pose_robot, msg.get(), (AbstractTransform*) new Transform());
-  path->startController(&pose_robot, msg.get(), (AbstractTransform*) new Transform(), "robot", "odometry", "command/velocity");
+  path->startController(&pose_robot, msg.get(), (AbstractTransform*) new Transform(), "robot", "odom", "cmd_vel");
 }
 
 void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
   path->setActionMultiRate(multirate_fnc);
   path->setPathController(path_controller);
 
-  ros::Subscriber odometry = nh.subscribe("/robot/odometry", 1000, odometry_Callback);
+  ros::Subscriber odometry = nh.subscribe("/odom", 1000, odometry_Callback);
   ros::Subscriber goal = nh.subscribe("/move_base_simple/goal", 1000, poseCallback);
 
   ROS_INFO("Wait 2sec...");
