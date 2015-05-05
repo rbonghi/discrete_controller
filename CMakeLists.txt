@@ -4,7 +4,17 @@ project(discrete_controller)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf message_generation)
+find_package(catkin REQUIRED
+        COMPONENTS
+            roscpp
+            costmap_2d
+            std_msgs
+            tf
+            message_generation
+            nav_core
+            nav_msgs
+            pluginlib
+        )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -73,9 +83,21 @@ set(discrete_SRC
     src/Unicycle.cpp
 )
 
-add_executable(discrete_controller_node ${discrete_SRC})
-target_link_libraries(discrete_controller_node ${catkin_LIBRARIES})
-add_dependencies(discrete_controller_node discrete_gencpp)
+#add_executable(discrete_controller_node ${discrete_SRC})
+#target_link_libraries(discrete_controller_node ${catkin_LIBRARIES})
+#add_dependencies(discrete_controller_node discrete_gencpp)
+
+set(multi_rate_planner_SRC
+    src/PathPlotter.cpp
+    src/transformation/Transform.cpp
+    src/transformation/TransformFirst.cpp
+    src/Unicycle.cpp
+)
+
+add_library(multi_rate_planner src/multi_rate_planner.cpp)
+target_link_libraries(multi_rate_planner ${catkin_LIBRARIES})
+add_dependencies(multi_rate_planner dwa_local_planner_gencfg)
+add_dependencies(multi_rate_planner nav_msgs_gencpp)
 
 ## Declare a cpp library
 # add_library(discrete_controller
