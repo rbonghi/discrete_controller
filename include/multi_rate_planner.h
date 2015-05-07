@@ -13,6 +13,8 @@
 #include <base_local_planner/world_model.h>
 #include <base_local_planner/costmap_model.h>
 
+#include "PathPlotter.h"
+
  using std::string;
 
 namespace multi_rate_planner {
@@ -38,6 +40,8 @@ protected:
     costmap_2d::Costmap2DROS* costmap_ros_;
     bool initialized_;
     ros::Publisher plan_pub_;
+
+    PathPlotter* path_;
     //boost::shared_ptr<NavFn> planner_;
 
     //pcl_ros::Publisher<PotarrPoint> potarr_pub_;
@@ -45,6 +49,11 @@ protected:
 
 private:
     std::string tf_prefix_;
+
+    discrete_controller::Command cmd;
+
+    discrete_controller::Command rate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    discrete_controller::Command multirate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
 };
 
 }

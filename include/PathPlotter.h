@@ -18,18 +18,21 @@
 #include <discrete_controller/Command.h>
 #include <std_srvs/Empty.h>
 
-const std::string goal_string = "goal";
-const std::string path_string = "path";
-const std::string command_string = "command";
+//const std::string goal_string = "goal";
+//const std::string path_string = "path";
+//const std::string command_string = "command";
 const std::string desidered_unicycle_string = "desidered_unicycle";
-const std::string pose_array_string = "pose_step";
+//const std::string pose_array_string = "pose_step";
 const std::string control_stop_string = "/control/emergency";
 
 class PathPlotter {
 public:
-    typedef discrete_controller::Command(* ActionType) (int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    typedef boost::function<discrete_controller::Command (int, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) > ActionType;
+
+    //typedef discrete_controller::Command(* ActionType_b) (int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+
     typedef geometry_msgs::Twist(* ControllerType) (ros::NodeHandle nh, geometry_msgs::Twist velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
-    PathPlotter(const ros::NodeHandle& nh, std::string name, int rate, int length);
+    PathPlotter(const ros::NodeHandle& nh, int rate, int length);
     PathPlotter(const PathPlotter& orig);
     virtual ~PathPlotter();
 
@@ -43,9 +46,21 @@ public:
     void setPathController(ControllerType controller);
     
     void startController(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform, std::string robot, std::string odometry, std::string velocity);
-    void setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform);
+    void setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, std::vector<geometry_msgs::PoseStamped>* path, AbstractTransform* transform);
+
+    void addMultiRateCallback(const boost::function<discrete_controller::Command (int, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
+
+    template <class T> void addMultiRateCallback(discrete_controller::Command(T::*fp)(int, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
+        addMultiRateCallback(boost::bind(fp, obj, _1));
+    }
+
+    void addRateCallback(const boost::function<discrete_controller::Command (int, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
+
+    template <class T> void addRateCallback(discrete_controller::Command(T::*fp)(int, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
+        addRateCallback(boost::bind(fp, obj, _1));
+    }
+
 private:
-    std::string name_;  //Name param and topic control
     //step trajectory
     int length_step_, counter_step_pose_array_, step_pose_array_;
     geometry_msgs::PoseArray array_step_;
@@ -56,8 +71,8 @@ private:
 
     ros::NodeHandle nh_; //ROS Node controller
     //Publisher for print goal and path robot
-    ros::Publisher pub_goal_, pub_path_;
-    ros::Publisher pub_multirate_, pub_desidered_unicycle_;      // Pubblisher command chained form
+    //ros::Publisher pub_goal_, pub_path_;
+    ros::Publisher pub_multirate_; //, pub_desidered_unicycle_;      // Pubblisher command chained form
     int length_; //Length array for path
     nav_msgs::Path path_;
     Unicycle* unicycle_; //Unicycle for plot trajectory
@@ -71,7 +86,7 @@ private:
     discrete_controller::Command cmd_controller_; //Command to drive robot
     ros::Subscriber sub_odometry_;
     ros::Publisher pub_path_control_;
-    ros::Publisher pub_array_step_; //Array pose robots
+    //ros::Publisher pub_array_step_; //Array pose robots
     ControllerType controller_;
     
     ros::ServiceServer control_stop_srv_;
@@ -79,7 +94,7 @@ private:
     discrete_controller::Command stop(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
     discrete_controller::Command rateStep(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
     discrete_controller::Command multiRateStep(int step, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
-    void draw_path(AbstractTransform* transform, discrete_controller::Command cmd, int counter, int step, double update);
+    void draw_path(std::vector<geometry_msgs::PoseStamped>* path, AbstractTransform* transform, discrete_controller::Command cmd, int counter, int step, double update);
 
     void odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg);
     void timerCallback(const ros::TimerEvent& event);

@@ -8,16 +8,15 @@
 #include "PathPlotter.h"
 #include "transformation/AbstractTransform.h"
 
-PathPlotter::PathPlotter(const ros::NodeHandle& nh, std::string name, int multirate, int length) : nh_(nh)
+PathPlotter::PathPlotter(const ros::NodeHandle& nh, int multirate, int length) : nh_(nh)
 {
-  pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + goal_string, 1000);
-  pub_array_step_ = nh_.advertise<geometry_msgs::PoseArray>("/" + name + "/" + pose_array_string, 1000);
-  pub_path_ = nh_.advertise<nav_msgs::Path>("/" + name + "/" + path_string, 1000);
-  pub_multirate_ = nh_.advertise<discrete_controller::Command>("/" + name + "/" + command_string, 1000);
-  pub_desidered_unicycle_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + desidered_unicycle_string, 1000);
+//  pub_goal_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + goal_string, 1000);
+//  pub_array_step_ = nh_.advertise<geometry_msgs::PoseArray>("/" + name + "/" + pose_array_string, 1000);
+//  pub_path_ = nh_.advertise<nav_msgs::Path>("/" + name + "/" + path_string, 1000);
+  pub_multirate_ = nh_.advertise<discrete_controller::Command>("command", 1000);
+//  pub_desidered_unicycle_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + desidered_unicycle_string, 1000);
   //Emergency stop control
   control_stop_srv_ = nh_.advertiseService(control_stop_string, &PathPlotter::control_stop_Callback, this);
-  name_ = name;
   multirate_ = multirate;
   length_ = length;
   path_.poses.resize(length);
@@ -37,7 +36,7 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, std::string name, int multir
 
   //parameter step trajectory
   length_step_ = 2;
-  nh_.setParam(name + "/" + pose_array_string, length_step_);
+  nh_.setParam("pose_step", length_step_);
 }
 
 PathPlotter::PathPlotter(const PathPlotter& orig)
@@ -46,8 +45,8 @@ PathPlotter::PathPlotter(const PathPlotter& orig)
 
 PathPlotter::~PathPlotter()
 {
-  pub_goal_.~Publisher();
-  pub_path_.~Publisher();
+  //pub_goal_.~Publisher();
+  //pub_path_.~Publisher();
   unicycle_->~Unicycle();
   free(pActions);
   pActions = NULL;
@@ -78,6 +77,10 @@ void PathPlotter::setActionRate(ActionType action)
   actionRate_ = action;
 }
 
+void PathPlotter::addRateCallback(const boost::function<discrete_controller::Command (int, const geometry_msgs::PoseStamped *, const geometry_msgs::PoseStamped *)> &callback) {
+    actionRate_ = callback;
+}
+
 void PathPlotter::setActionStop(ActionType action)
 {
   actionStop_ = action;
@@ -90,6 +93,14 @@ void PathPlotter::setActionMultiRate(ActionType action)
     pActions[counter_actions_++] = action;
   else
     ROS_ERROR("FULL");
+}
+
+void PathPlotter::addMultiRateCallback(const boost::function<discrete_controller::Command (int, const geometry_msgs::PoseStamped *, const geometry_msgs::PoseStamped *)> &callback) {
+    //  ROS_INFO("Counter_actions: %d", counter_actions_);
+    if (counter_actions_ <= (multirate_ - 2))
+      pActions[counter_actions_++] = callback;
+    else
+      ROS_ERROR("FULL");
 }
 
 discrete_controller::Command PathPlotter::stop(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
@@ -186,7 +197,7 @@ void PathPlotter::odometry_Callback(const nav_msgs::Odometry::ConstPtr& msg)
   unicycle_->setVelocity(velocityd);
   unicycle_->update(update);
   geometry_msgs::PoseStamped posed = unicycle_->getPose();
-  pub_desidered_unicycle_.publish(posed);
+  //pub_desidered_unicycle_.publish(posed);
   // Start control path
   geometry_msgs::Twist velocity = path_controller(velocityd, posed, *msg.get());
   pub_path_control_.publish(velocity);
@@ -237,7 +248,7 @@ void PathPlotter::startController(const geometry_msgs::PoseStamped* pose_robot, 
 
 }
 
-void PathPlotter::setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform)
+void PathPlotter::setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, std::vector<geometry_msgs::PoseStamped>* path, AbstractTransform* transform)
 {
   discrete_controller::Command cmd; //Command to drive robot
   geometry_msgs::PoseStamped pose;
@@ -250,7 +261,7 @@ void PathPlotter::setGoal(const geometry_msgs::PoseStamped* pose_robot, const ge
   //Print step
   counter_step_pose_array_ = 0;
   array_step_.header = pose_robot->header;
-  nh_.getParam(name_ + "/" + pose_array_string, length_step_); //Update step
+  nh_.getParam("pose_step", length_step_); //Update step
   array_step_.poses.resize(length_step_);
   step_pose_array_ = length_ / length_step_;
   for (int counter = 0; counter < multirate_; counter++)
@@ -263,35 +274,37 @@ void PathPlotter::setGoal(const geometry_msgs::PoseStamped* pose_robot, const ge
     {
       cmd = multiRateStep(counter, pose_robot, pose_goal);
     }
-    draw_path(transform, cmd, counter, step, update);
+    draw_path(path, transform, cmd, counter, step, update);
   }
-  pub_path_.publish(path_);
-  pub_goal_.publish(*pose_goal);
+  //pub_path_.publish(path_);
+  //pub_goal_.publish(*pose_goal);
   ROS_INFO("Size: %d, Length: %d", length_step_, counter_step_pose_array_);
-  pub_array_step_.publish(array_step_);
+  //pub_array_step_.publish(array_step_);
+  //return path_;
 }
 
-void PathPlotter::draw_path(AbstractTransform* transform, discrete_controller::Command cmd, int counter, int step, double update)
+void PathPlotter::draw_path(std::vector<geometry_msgs::PoseStamped>* path, AbstractTransform* transform, discrete_controller::Command cmd, int counter, int step, double update)
 {
-  for (int i = counter * step; i <= (counter + 1) * step; i++)
-  {
-    geometry_msgs::PoseStamped pose = unicycle_->getPose();
-    transform->setPoseStamped(&pose);
-    geometry_msgs::Twist velocity = transform->control(cmd);
-    unicycle_->setVelocity(velocity);
-    unicycle_->update(ros::Duration(update));
-    if (i < (counter + 1) * step)
+    for (int i = counter * step; i <= (counter + 1) * step; i++)
     {
-      path_.poses[i] = unicycle_->getPose();
+        geometry_msgs::PoseStamped pose = unicycle_->getPose();
+        transform->setPoseStamped(&pose);
+        geometry_msgs::Twist velocity = transform->control(cmd);
+        unicycle_->setVelocity(velocity);
+        unicycle_->update(ros::Duration(update));
+        if (i < (counter + 1) * step)
+        {
+            path->push_back(unicycle_->getPose());
+            path_.poses[i] = unicycle_->getPose();
+        }
+        // Add pose array step
+        if (i == (counter_step_pose_array_ + 1) * step_pose_array_)
+        {
+            ROS_INFO("Pose [%f, %f]", unicycle_->getPose().pose.position.x, unicycle_->getPose().pose.position.y);
+            array_step_.poses[counter_step_pose_array_] = unicycle_->getPose().pose;
+            counter_step_pose_array_++;
+        }
     }
-    // Add pose array step
-    if (i == (counter_step_pose_array_ + 1) * step_pose_array_)
-    {
-      ROS_INFO("Pose [%f, %f]", unicycle_->getPose().pose.position.x, unicycle_->getPose().pose.position.y);
-      array_step_.poses[counter_step_pose_array_] = unicycle_->getPose().pose;
-      counter_step_pose_array_++;
-    }
-  }
 }
 
 bool PathPlotter::control_stop_Callback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)

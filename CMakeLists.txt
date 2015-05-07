@@ -94,7 +94,7 @@ set(multi_rate_planner_SRC
     src/Unicycle.cpp
 )
 
-add_library(multi_rate_planner src/multi_rate_planner.cpp)
+add_library(multi_rate_planner src/multi_rate_planner.cpp ${multi_rate_planner_SRC})
 target_link_libraries(multi_rate_planner ${catkin_LIBRARIES})
 add_dependencies(multi_rate_planner dwa_local_planner_gencfg)
 add_dependencies(multi_rate_planner nav_msgs_gencpp)

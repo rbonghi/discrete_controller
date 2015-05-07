@@ -1,7 +1,5 @@
-<library path="lib/multi_rate_planner">
+<library path="lib/libmulti_rate_planner">
   <class name="discrete_controller/MultiRatePlanner" type="multi_rate_planner::MultiRatePlanner" base_class_type="nav_core::BaseGlobalPlanner">
-    <description>
-      A implementation of multi rate controller
-    </description>
+    <description>Multi rate controller</description>
   </class>
 </library>
