@@ -52,8 +52,8 @@ private:
 
     discrete_controller::Command cmd;
 
-    discrete_controller::Command rate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
-    discrete_controller::Command multirate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    discrete_controller::Command rate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    discrete_controller::Command multirate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
 };
 
 }

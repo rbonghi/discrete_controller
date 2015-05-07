@@ -45,6 +45,7 @@ namespace multi_rate_planner {
             path_ = new PathPlotter(private_nh, 2, 1000);
             path_->setTime(10);
             path_->addRateCallback(&MultiRatePlanner::rate_fnc, this);
+            //path_->addRateCallback(&MultiRatePlanner::rate_fnc, this);
             //path_->setActionRate(rate_fnc);
             //path_->setActionMultiRate(multirate_fnc);
 
@@ -90,7 +91,7 @@ namespace multi_rate_planner {
         return true;
     }
 
-    discrete_controller::Command MultiRatePlanner::rate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
+    discrete_controller::Command MultiRatePlanner::rate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
     {
 //      Transform zr(pose_robot);
 //      //  ROS_INFO("zr [%f, %f, %f]", zr.state.z1, zr.state.z2, zr.state.z3);
@@ -106,7 +107,7 @@ namespace multi_rate_planner {
       return cmd;
     }
 
-    discrete_controller::Command MultiRatePlanner::multirate_fnc(int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
+    discrete_controller::Command MultiRatePlanner::multirate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
     {
 
 //      double u21 = cmd.u2;
