@@ -8,7 +8,10 @@
 
 
 //register this planner as a BaseGlobalPlanner plugin
-PLUGINLIB_DECLARE_CLASS(multi_rate_planner, MultiRatePlanner, multi_rate_planner::MultiRatePlanner, nav_core::BaseGlobalPlanner)
+//PLUGINLIB_DECLARE_CLASS(multi_rate_planner, MultiRatePlanner, multi_rate_planner::MultiRatePlanner, nav_core::BaseGlobalPlanner)
+
+//register this planner as a BaseGlobalPlanner plugin
+PLUGINLIB_EXPORT_CLASS(multi_rate_planner::MultiRatePlanner, nav_core::BaseGlobalPlanner)
 
 // http://wiki.ros.org/navigation/Tutorials/Writing%20A%20Global%20Path%20Planner%20As%20Plugin%20in%20ROS
 // https://github.com/ros-planning/navigation/blob/jade-devel/navfn/src/navfn_ros.cpp
@@ -40,6 +43,8 @@ namespace multi_rate_planner {
             tf_prefix_ = tf::getPrefixParam(prefix_nh);
 
             initialized_ = true;
+
+            ROS_INFO_STREAM("HELLOOO");
         } else {
             ROS_WARN("This planner has already been initialized, you can't call it twice, doing nothing");
         }
