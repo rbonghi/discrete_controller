@@ -16,7 +16,10 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, int multirate, int length) :
   pub_multirate_ = nh_.advertise<discrete_controller::Command>("command", 1000);
 //  pub_desidered_unicycle_ = nh_.advertise<geometry_msgs::PoseStamped>("/" + name + "/" + desidered_unicycle_string, 1000);
   //Emergency stop control
+
   control_stop_srv_ = nh_.advertiseService(control_stop_string, &PathPlotter::control_stop_Callback, this);
+
+
   multirate_ = multirate;
   length_ = length;
   path_.poses.resize(length);
@@ -24,9 +27,11 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, int multirate, int length) :
 
   actionRate_ = NULL;
   actionStop_ = NULL;
-  pActions = (ActionType *) malloc((multirate - 1) * sizeof (ActionType));
-  for (int i = 0; i < multirate; i++)
+  //pActions = (ActionType *) malloc((multirate - 1) * sizeof (ActionType));
+
+  for (int i = 0; i < 10; i++) {
     pActions[i] = NULL;
+  }
   counter_actions_ = 0;
   stop_ = false;
 
@@ -37,6 +42,7 @@ PathPlotter::PathPlotter(const ros::NodeHandle& nh, int multirate, int length) :
   //parameter step trajectory
   length_step_ = 2;
   nh_.setParam("pose_step", length_step_);
+
 }
 
 PathPlotter::PathPlotter(const PathPlotter& orig)
@@ -48,8 +54,8 @@ PathPlotter::~PathPlotter()
   //pub_goal_.~Publisher();
   //pub_path_.~Publisher();
   unicycle_->~Unicycle();
-  free(pActions);
-  pActions = NULL;
+  //free(pActions);
+  //pActions = NULL;
 }
 
 void PathPlotter::setTime(int time)
@@ -77,7 +83,7 @@ void PathPlotter::setActionRate(ActionType action)
   actionRate_ = action;
 }
 
-void PathPlotter::addRateCallback(const boost::function<discrete_controller::Command (const int *, const geometry_msgs::PoseStamped *, const geometry_msgs::PoseStamped *)> &callback) {
+void PathPlotter::addRateCallback(const boost::function<discrete_controller::Command (int &, const geometry_msgs::PoseStamped *, const geometry_msgs::PoseStamped *)> &callback) {
     actionRate_ = callback;
 }
 
@@ -95,8 +101,8 @@ void PathPlotter::setActionMultiRate(ActionType action)
     ROS_ERROR("FULL");
 }
 
-void PathPlotter::addMultiRateCallback(const boost::function<discrete_controller::Command (const int *, const geometry_msgs::PoseStamped *, const geometry_msgs::PoseStamped *)> &callback) {
-    //  ROS_INFO("Counter_actions: %d", counter_actions_);
+void PathPlotter::addMultiRateCallback(const boost::function<discrete_controller::Command (int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback) {
+//    ROS_INFO("Counter_actions: %d", counter_actions_);
     if (counter_actions_ <= (multirate_ - 2))
       pActions[counter_actions_++] = callback;
     else
@@ -105,7 +111,6 @@ void PathPlotter::addMultiRateCallback(const boost::function<discrete_controller
 
 discrete_controller::Command PathPlotter::stop(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
 {
-    const int *time = &time_;
     sub_odometry_.shutdown();
     if (actionStop_ == NULL)
     {
@@ -116,14 +121,13 @@ discrete_controller::Command PathPlotter::stop(const geometry_msgs::PoseStamped*
         return cmd;
     }
     else {
-        return actionStop_(time, pose_robot, pose_goal);
+        return actionStop_(time_, pose_robot, pose_goal);
     }
 }
 
 discrete_controller::Command PathPlotter::rateStep(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
 {
   //  ROS_INFO("Rate step");
-    const int* time = &time_;
   if (actionRate_ == NULL)
   {
     ROS_ERROR("Never rate function");
@@ -134,14 +138,13 @@ discrete_controller::Command PathPlotter::rateStep(const geometry_msgs::PoseStam
   }
   else
   {
-    return actionRate_(time, pose_robot, pose_goal);
+    return actionRate_(time_, pose_robot, pose_goal);
   }
 }
 
 discrete_controller::Command PathPlotter::multiRateStep(int step, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
 {
-  //  ROS_INFO("Multi Rate step, number: %d", step - 1);
-    const int* time = &time_;
+//  ROS_INFO("Multi Rate step, number: %d", step - 1);
   if (pActions[step - 1] == NULL)
   {
     ROS_ERROR("Never function on step: %d", step);
@@ -152,7 +155,7 @@ discrete_controller::Command PathPlotter::multiRateStep(int step, const geometry
   }
   else
   {
-    return pActions[step - 1](time, pose_robot, pose_goal);
+    return pActions[step - 1](time_, pose_robot, pose_goal);
   }
 }
 
@@ -270,6 +273,7 @@ void PathPlotter::setGoal(const geometry_msgs::PoseStamped* pose_robot, const ge
   step_pose_array_ = length_ / length_step_;
   for (int counter = 0; counter < multirate_; counter++)
   {
+      //ROS_INFO_STREAM("counter: " << counter << " multirate: " << multirate_);
     if (!(counter % multirate_))
     {
       cmd = rateStep(pose_robot, pose_goal);

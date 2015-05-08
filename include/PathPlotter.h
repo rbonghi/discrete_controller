@@ -27,9 +27,11 @@ const std::string control_stop_string = "/control/emergency";
 
 class PathPlotter {
 public:
-    typedef boost::function<discrete_controller::Command (const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) > ActionType;
+    //typedef boost::function<discrete_controller::Command (const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) > ActionType;
 
-    //typedef discrete_controller::Command(* ActionType_b) (int delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    //typedef discrete_controller::Command(* ActionType) (const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+
+    typedef boost::function<discrete_controller::Command (int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) > ActionType;
 
     typedef geometry_msgs::Twist(* ControllerType) (ros::NodeHandle nh, geometry_msgs::Twist velocityd, geometry_msgs::PoseStamped posed, nav_msgs::Odometry pose_robot);
     PathPlotter(const ros::NodeHandle& nh, int rate, int length);
@@ -48,16 +50,16 @@ public:
     void startController(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, AbstractTransform* transform, std::string robot, std::string odometry, std::string velocity);
     void setGoal(const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal, std::vector<geometry_msgs::PoseStamped>* path, AbstractTransform* transform);
 
-    void addMultiRateCallback(const boost::function<discrete_controller::Command (const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
+    void addMultiRateCallback(const boost::function<discrete_controller::Command (int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
 
-    template <class T> void addMultiRateCallback(discrete_controller::Command(T::*fp)(const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
-        addMultiRateCallback(boost::bind(fp, obj, _1));
+    template <class T> void addMultiRateCallback(discrete_controller::Command(T::*fp)(int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
+        addMultiRateCallback(boost::bind(fp, obj, _1, _2, _3));
     }
 
-    void addRateCallback(const boost::function<discrete_controller::Command (const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
+    void addRateCallback(const boost::function<discrete_controller::Command (int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*) >& callback);
 
-    template <class T> void addRateCallback(discrete_controller::Command(T::*fp)(const int*, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
-        addRateCallback(boost::bind(fp, obj, _1));
+    template <class T> void addRateCallback(discrete_controller::Command(T::*fp)(int&, const geometry_msgs::PoseStamped*, const geometry_msgs::PoseStamped*), T* obj) {
+        addRateCallback(boost::bind(fp, obj, _1, _2, _3));
     }
 
 private:
@@ -65,7 +67,7 @@ private:
     int length_step_, counter_step_pose_array_, step_pose_array_;
     geometry_msgs::PoseArray array_step_;
     // Actions for multirate
-    ActionType *pActions;
+    ActionType pActions[10];
     ActionType actionRate_, actionStop_;
     unsigned int counter_actions_;
 

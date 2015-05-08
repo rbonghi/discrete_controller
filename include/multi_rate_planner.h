@@ -13,6 +13,7 @@
 #include <base_local_planner/world_model.h>
 #include <base_local_planner/costmap_model.h>
 
+#include "transformation/Transform.h"
 #include "PathPlotter.h"
 
  using std::string;
@@ -42,6 +43,7 @@ protected:
     ros::Publisher plan_pub_;
 
     PathPlotter* path_;
+    Transform alpha_;
     //boost::shared_ptr<NavFn> planner_;
 
     //pcl_ros::Publisher<PotarrPoint> potarr_pub_;
@@ -52,8 +54,9 @@ private:
 
     discrete_controller::Command cmd;
 
-    discrete_controller::Command rate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
-    discrete_controller::Command multirate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+    discrete_controller::Command multirate_fnc(int& delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
+
+    discrete_controller::Command rate_fnc(int& delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal);
 };
 
 }

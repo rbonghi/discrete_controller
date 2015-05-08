@@ -7,6 +7,7 @@
 #include <costmap_2d/costmap_2d.h>
 #include <nav_msgs/Path.h>
 
+#include <boost/bind.hpp>
 
 //register this planner as a BaseGlobalPlanner plugin
 PLUGINLIB_DECLARE_CLASS(multi_rate_planner, MultiRatePlanner, multi_rate_planner::MultiRatePlanner, nav_core::BaseGlobalPlanner)
@@ -45,9 +46,7 @@ namespace multi_rate_planner {
             path_ = new PathPlotter(private_nh, 2, 1000);
             path_->setTime(10);
             path_->addRateCallback(&MultiRatePlanner::rate_fnc, this);
-            //path_->addRateCallback(&MultiRatePlanner::rate_fnc, this);
-            //path_->setActionRate(rate_fnc);
-            //path_->setActionMultiRate(multirate_fnc);
+            path_->addMultiRateCallback(&MultiRatePlanner::multirate_fnc, this);
 
         } else {
             ROS_WARN("This planner has already been initialized, you can't call it twice, doing nothing");
@@ -86,35 +85,33 @@ namespace multi_rate_planner {
 //        }
 //        plan.push_back(goal);
 
-        plan.push_back(start);
+        //plan.push_back(start);
 
         return true;
     }
 
-    discrete_controller::Command MultiRatePlanner::rate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
+    discrete_controller::Command MultiRatePlanner::rate_fnc(int& delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
     {
-//      Transform zr(pose_robot);
-//      //  ROS_INFO("zr [%f, %f, %f]", zr.state.z1, zr.state.z2, zr.state.z3);
-//      Transform zk(pose_goal);
-//      //  ROS_INFO("zk [z1: %f, z2: %f, z3: %f]", zk.state.z1, zk.state.z2, zk.state.z3);
-//      alpha = (zk - zr) / delta;
-//      //  ROS_INFO("alpha [%f, %f, %f]", alpha.state.z1, alpha.state.z2, alpha.state.z3);
+      Transform zr(pose_robot);
+      //  ROS_INFO("zr [%f, %f, %f]", zr.state.z1, zr.state.z2, zr.state.z3);
+      Transform zk(pose_goal);
+      //  ROS_INFO("zk [z1: %f, z2: %f, z3: %f]", zk.state.z1, zk.state.z2, zk.state.z3);
+      alpha_ = (zk - zr) / delta;
+      //  ROS_INFO("alpha [%f, %f, %f]", alpha.state.z1, alpha.state.z2, alpha.state.z3);
 
-//      cmd.u1 = alpha.state.z1;
-//      cmd.u2 = (-alpha.state.z2 + (4 * alpha.state.z3) / (delta * alpha.state.z1) - (4 * zr.state.z2) / (delta));
+      cmd.u1 = alpha_.state.z1;
+      cmd.u2 = (-alpha_.state.z2 + (4 * alpha_.state.z3) / (delta * alpha_.state.z1) - (4 * zr.state.z2) / (delta));
 
-      //  ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
+      ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
+
       return cmd;
     }
 
-    discrete_controller::Command MultiRatePlanner::multirate_fnc(const int* delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal)
-    {
-
-//      double u21 = cmd.u2;
-//      cmd.u2 = (2 * alpha.state.z2 - u21);
-
-      //  ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
-      return cmd;
+    discrete_controller::Command MultiRatePlanner::multirate_fnc(int& delta, const geometry_msgs::PoseStamped* pose_robot, const geometry_msgs::PoseStamped* pose_goal) {
+        double u21 = cmd.u2;
+        cmd.u2 = (2 * alpha_.state.z2 - u21);
+       ROS_INFO("u1: %f, u2: %f", cmd.u1, cmd.u2);
+       return cmd;
     }
 
 }

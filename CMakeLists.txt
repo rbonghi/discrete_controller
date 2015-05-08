@@ -17,7 +17,7 @@ find_package(catkin REQUIRED
         )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system thread)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -95,7 +95,7 @@ set(multi_rate_planner_SRC
 )
 
 add_library(multi_rate_planner src/multi_rate_planner.cpp ${multi_rate_planner_SRC})
-target_link_libraries(multi_rate_planner ${catkin_LIBRARIES})
+target_link_libraries(multi_rate_planner ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(multi_rate_planner dwa_local_planner_gencfg)
 add_dependencies(multi_rate_planner nav_msgs_gencpp)
 
